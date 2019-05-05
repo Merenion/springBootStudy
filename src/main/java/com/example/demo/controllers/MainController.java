@@ -1,8 +1,10 @@
 package com.example.demo.controllers;
 
 import com.example.demo.domain.Message;
+import com.example.demo.domain.User;
 import com.example.demo.repos.MessageRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,8 +33,11 @@ public class MainController {
     }
 
     @PostMapping("/main") //если ничего не добавлять то пройдет как /post такое можно лишь единожды
-    public String add (@RequestParam String text,@RequestParam String tag, Map<String,Object> model){  //text и tag совпадает с названием переменной в файле main.mustache
-        Message message = new Message(text,tag);
+    public String add (
+            @AuthenticationPrincipal User user,
+            @RequestParam String text,
+            @RequestParam String tag, Map<String,Object> model){  //text и tag совпадает с названием переменной в файле main.mustache
+        Message message = new Message(text,tag,user);
         messageRepo.save(message);
 
         Iterable<Message> messages =messageRepo.findAll();
